@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -23,7 +24,7 @@ import com.example.applogin.ui.theme.AppLoginTheme
 
 
 @Composable
-fun Register(modifier: Modifier = Modifier, navController: NavController) {
+fun Register(modifier: Modifier = Modifier, navController: NavController, registeredUsers: MutableList<User>) {
     var emailTextFieldValue by remember { mutableStateOf("") }
     var usernameTextFieldValue by remember { mutableStateOf("") }
     var passwordTextFieldValue by remember { mutableStateOf("") }
@@ -50,15 +51,37 @@ fun Register(modifier: Modifier = Modifier, navController: NavController) {
         TextField(
             value = passwordTextFieldValue,
             onValueChange = { text -> passwordTextFieldValue = text },
-            label = { Text("Password") }
+            label = { Text("Password") },
+            visualTransformation = PasswordVisualTransformation()
         )
         TextField(
             value = confirmPasswordTextFieldValue,
             onValueChange = { text -> confirmPasswordTextFieldValue = text },
-            label = { Text("Confirm Password") }
+            label = { Text("Confirm Password") },
+            visualTransformation = PasswordVisualTransformation()
         )
         Button(onClick = {
-            print("Register with email: $emailTextFieldValue, username: $usernameTextFieldValue, password: $passwordTextFieldValue")
+            if (emailTextFieldValue.isNotEmpty() && usernameTextFieldValue.isNotEmpty() && passwordTextFieldValue.isNotEmpty() && passwordTextFieldValue == confirmPasswordTextFieldValue) {
+                val newUser = User(
+                    id = registeredUsers.size + 1,
+                    name = usernameTextFieldValue,
+                    company = "",
+                    username = usernameTextFieldValue,
+                    email = emailTextFieldValue,
+                    password = passwordTextFieldValue,
+                    address = "",
+                    zip = "",
+                    state = "",
+                    country = "",
+                    phone = "",
+                    photo = ""
+                )
+                registeredUsers.add(newUser)
+                print("User registered: $newUser")
+                navController.popBackStack()
+            } else {
+                print("Please fill all fields and passwords must match")
+            }
         }) {
             Text(text = "Register")
         }
@@ -72,7 +95,7 @@ fun Register(modifier: Modifier = Modifier, navController: NavController) {
 @Composable
 fun RegisterPreview() {
     AppLoginTheme {
-        Register(navController = rememberNavController())
+        Register(navController = rememberNavController(), registeredUsers = mutableListOf())
     }
 }
 

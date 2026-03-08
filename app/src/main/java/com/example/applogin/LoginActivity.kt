@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -24,7 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.applogin.ui.theme.AppLoginTheme
 
 @Composable
-fun Login(modifier: Modifier = Modifier, navController: NavController) {
+fun Login(modifier: Modifier = Modifier, navController: NavController, registeredUsers: MutableList<User>) {
     var usernameTextFieldValue by remember { mutableStateOf("") }
     var passwordTextFieldValue by remember { mutableStateOf("") }
     var rememberMeChecked by remember { mutableStateOf(false) }
@@ -45,7 +46,8 @@ fun Login(modifier: Modifier = Modifier, navController: NavController) {
         TextField(
             value = passwordTextFieldValue,
             onValueChange = {text -> passwordTextFieldValue = text},
-            label = { Text("Password") }
+            label = { Text("Password") },
+            visualTransformation = PasswordVisualTransformation()
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -58,7 +60,12 @@ fun Login(modifier: Modifier = Modifier, navController: NavController) {
             Text(text = "Remember Me")
         }
         Button(onClick = {
-            print("Login with username: $usernameTextFieldValue and password: $passwordTextFieldValue, remember me: $rememberMeChecked")
+            val user = registeredUsers.find { it.username == usernameTextFieldValue && it.password == passwordTextFieldValue }
+            if (user != null) {
+                print("Login successful for user: ${user.username}")
+            } else {
+                print("Invalid username or password")
+            }
         }) {
             Text(text = "Login")
         }
@@ -73,6 +80,6 @@ fun Login(modifier: Modifier = Modifier, navController: NavController) {
 @Composable
 fun LoginPreview() {
     AppLoginTheme {
-        Login(navController = rememberNavController())
+        Login(navController = rememberNavController(), registeredUsers = mutableListOf())
     }
 }
