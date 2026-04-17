@@ -12,15 +12,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.applogin.api.RetrofitClient
 import com.example.applogin.ui.theme.AppLoginTheme
+import java.util.Date
 
 
 @Composable
@@ -29,6 +33,7 @@ fun Register(modifier: Modifier = Modifier, navController: NavController, regist
     var usernameTextFieldValue by remember { mutableStateOf("") }
     var passwordTextFieldValue by remember { mutableStateOf("") }
     var confirmPasswordTextFieldValue by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = modifier
@@ -65,20 +70,22 @@ fun Register(modifier: Modifier = Modifier, navController: NavController, regist
                 val newUser = User(
                     id = registeredUsers.size + 1,
                     name = usernameTextFieldValue,
-                    company = "",
-                    username = usernameTextFieldValue,
                     email = emailTextFieldValue,
                     password = passwordTextFieldValue,
-                    address = "",
-                    zip = "",
-                    state = "",
-                    country = "",
-                    phone = "",
-                    photo = ""
+                    picture = "no picture",
+                    dateOfBirth = Date()
                 )
-                registeredUsers.add(newUser)
-                print("User registered: $newUser")
-                navController.popBackStack()
+
+                coroutineScope.launch {
+                    try {
+                        val savedUser = RetrofitClient.apiService.saveUser(newUser)
+                        registeredUsers.add(savedUser)
+                        print("User registered: $newUser")
+                        navController.popBackStack()
+                    } catch (e: Exception) {
+                        print("Error registering user: ${e.message}")
+                    }
+                }
             } else {
                 print("Please fill all fields and passwords must match")
             }

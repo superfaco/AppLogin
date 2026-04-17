@@ -60,9 +60,9 @@ fun Login(modifier: Modifier = Modifier, navController: NavController, registere
             Text(text = "Remember Me")
         }
         Button(onClick = {
-            val user = registeredUsers.find { it.username == usernameTextFieldValue && it.password == passwordTextFieldValue }
+            val user = registeredUsers.find { it.name == usernameTextFieldValue && it.password == passwordTextFieldValue }
             if (user != null) {
-                print("Login successful for user: ${user.username}")
+                print("Login successful for user: ${user.name}")
             } else {
                 print("Invalid username or password")
             }

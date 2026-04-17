@@ -1,14 +1,9 @@
 package com.example.applogin.api
 
 import com.example.applogin.User
-import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.POST
 
-interface ApiService {
+interface UserService {
     @GET("users")
     suspend fun getUsers(): List<User>
-    @POST("users")
-    suspend fun saveUser(@Body user: User): User
 }
-
